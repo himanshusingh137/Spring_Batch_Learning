@@ -62,6 +62,7 @@ public class BatchJobController {
                     .addString("fullPathFileName", TEMP_STORAGE + originalFileName)
                     .addLong("startAt", System.currentTimeMillis()).toJobParameters();
 
+            System.out.println("parmar sahab");
             JobExecution execution = jobLauncher.run(job, jobParameters);
 
 //            if(execution.getExitStatus().getExitCode().equals(ExitStatus.COMPLETED)){

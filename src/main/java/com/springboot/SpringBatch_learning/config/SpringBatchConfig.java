@@ -22,20 +22,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.springboot.SpringBatch_learning.entity.Customer;
 import com.springboot.SpringBatch_learning.repository.CustomerRepository;
 
+
 @Configuration
-@EnableBatchProcessing
-//@AllArgsConstructor
 public class SpringBatchConfig {
 
 	@Autowired
 	private JobRepository jobRepository;
 	@Autowired
-	private PlatformTransactionManager platformTransactionManager;
+	private PlatformTransactionManager transactionManager;
 	
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -60,8 +60,7 @@ public class SpringBatchConfig {
 		lineTokenizer.setDelimiter(",");
 		lineTokenizer.setStrict(false);
 		lineTokenizer.setNames("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob", "age");
-		// lineTokenizer.setNames("id", "firstName", "lastName", "email", "gender",
-		// "contactNo", "country", "dob");
+		
 
 		BeanWrapperFieldSetMapper<Customer> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
 		fieldSetMapper.setTargetType(Customer.class);
@@ -88,7 +87,7 @@ public class SpringBatchConfig {
 	@Bean
 	public Step step1(FlatFileItemReader<Customer> itemReader) {
 		return new StepBuilder("step", jobRepository)
-				.<Customer, Customer>chunk(10,platformTransactionManager)
+				.<Customer, Customer>chunk(10,transactionManager)
 				.reader(itemReader)
 				.processor(processor())
 				.writer(customerItemWriter)
